@@ -1,0 +1,139 @@
+version: "3"
+services:
+    #https://hub.docker.com/_/zookeeper/
+	zookeeper-1:
+		image: confluentinc/cp-zookeeper:latest
+		#working_dir: /code
+		#command: bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
+		hostname: zookeeper-1
+		container_name: zookeeper-1
+		environment:
+			ZOOKEEPER_SERVER_ID: 1
+			#The unit of time for ZooKeeper translated to milliseconds. This governs all ZooKeeper time 
+			#dependent operations. It is used for heartbeats and timeouts especially.
+			ZOOKEEPER_TICK_TIME: 2000
+			ZOOKEEPER_INIT_LIMIT: 5
+			ZOOKEEPER_SYNC_LIMIT: 2
+			#Clients only need to be able to connect to the ensemble over the clientPort,
+			ZOOKEEPER_CLIENT_PORT: 22181
+			#server.X=hostname:peerPort:leaderPort
+			#members of the ensemble must be able to communicate with each other over all three ports
+			ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
+		expose:
+	    	- "22181"
+			- "22888"
+			- "23888"
+			- "32888"
+			- "33888"
+			- "42888"
+			- "43888"			
+		#ports:
+		#	- "4040:4040"
+
+	zookeeper-2:
+		image: confluentinc/cp-zookeeper:latest
+		#working_dir: /code
+		#command: bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
+		hostname: zookeeper-2
+		container_name: zookeeper-2
+		environment:
+			ZOOKEEPER_SERVER_ID: 2
+			ZOOKEEPER_CLIENT_PORT: 32181
+			ZOOKEEPER_TICK_TIME: 2000
+			ZOOKEEPER_INIT_LIMIT: 5
+			ZOOKEEPER_SYNC_LIMIT: 2
+			ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
+		expose:
+	    	- "32181"
+			- "22888"
+			- "23888"
+			- "32888"
+			- "33888"
+			- "42888"
+			- "43888"
+		#ports:
+		#	- "4040:4040"
+			
+	zookeeper-3:
+		image: confluentinc/cp-zookeeper:latest
+		#working_dir: /code
+		#command: bin/spark-class org.apache.spark.deploy.master.Master -h spark-master
+		hostname: zookeeper-3
+		container_name: zookeeper-3
+		environment:
+			ZOOKEEPER_SERVER_ID: 3
+			ZOOKEEPER_CLIENT_PORT: 42181
+			ZOOKEEPER_TICK_TIME: 2000
+			ZOOKEEPER_INIT_LIMIT: 5
+			ZOOKEEPER_SYNC_LIMIT: 2
+			ZOOKEEPER_SERVERS: localhost:22888:23888;localhost:32888:33888;localhost:42888:43888
+		expose:
+	    	- "42181"
+			- "22888"
+			- "23888"
+			- "32888"
+			- "33888"
+			- "42888"
+			- "43888"
+		#ports:
+		#	- "4040:4040"
+
+	kafka-1:
+		image: confluentinc/cp-kafka:latest
+		#command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+		hostname: kafka-1
+		container_name: kafka-1
+		depends_on:
+			- "zookeeper-1"
+			- "zookeeper-2"
+			- "zookeeper-3"
+		environment:
+			KAFKA_BROKER_ID: 1
+			KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
+			KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19092
+		expose:
+			- "19092"
+		#ports:
+		#	- "8082:8082"
+
+	kafka-2:
+		image: confluentinc/cp-kafka:latest
+		#command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+		hostname: kafka-2
+		container_name: kafka-2
+		depends_on:
+			- "zookeeper-1"
+			- "zookeeper-2"
+			- "zookeeper-3"
+		environment:
+			KAFKA_BROKER_ID: 2
+			KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
+			KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092
+		expose:
+			- "29092"
+		#ports:
+		#	- "8082:8082"
+
+	kafka-3:
+		image: confluentinc/cp-kafka:latest
+		#command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+		hostname: kafka-3
+		container_name: kafka-3
+		depends_on:
+			- "zookeeper-1"
+			- "zookeeper-2"
+			- "zookeeper-3"
+		environment:
+			KAFKA_BROKER_ID: 1
+			KAFKA_ZOOKEEPER_CONNECT: localhost:22181,localhost:32181,localhost:42181
+			KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:39092
+		expose:
+			- "39092"
+		#ports:
+		#	- "8082:8082"
+
+# If you want your containers to join a pre-existing network, use the external option
+networks:
+	default:
+	external:
+		name: kafka-net	
