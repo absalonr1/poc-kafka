@@ -3,7 +3,6 @@ package aopazo_kafka.test;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
@@ -35,8 +34,8 @@ public class App {
         * up and notifying the client of an issue. By default, the producer will wait 100ms between retries, 
         * but you can control this using the "retry.backoff.ms" parameter. 
         */
-       props.put("retries", 10);
-       props.put("retry.backoff.ms", 300);
+       props.put("retries", 2);
+       props.put("retry.backoff.ms", 2000);
        //props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,Integer.toString(Integer.MAX_VALUE)); // increase to infinity from default of 300 s
 
        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -45,13 +44,15 @@ public class App {
        Producer<String, String> producer = new KafkaProducer<String, String>(props);
        TestCallback callback = new TestCallback();
 
-       for (long i = 0; i < 100 ; i++) {
+       for (long i = 0; i < 2 ; i++) {
+    	   long time = System.currentTimeMillis();
            ProducerRecord<String, String> data = new ProducerRecord<String, String>(
                    "test-topic", 
-                   "key-" + i +"-"+System.currentTimeMillis(), 
+                   "key-" + i +"-"+time, 
                    "message-"+i 
                   );
            // ASYNC
+           logger.info("Sending key: ("+"key-" + i +"-"+time+")");
            producer.send(data, callback);
            /*
             *  // SYNC
@@ -77,7 +78,7 @@ public class App {
         	    * When the producer receives an error, it may retry sending the message a
         	    *  few more times before giving up and returning an error
         	    */
-               logger.debug("Error while producing message to topic :" + recordMetadata,e);
+               logger.info("Error - while producing message to topic :" + recordMetadata,e);
            } else {
         	   /*
         	    * If the messages were successfully written to Kafka, it will return a RecordMetadata 
@@ -85,7 +86,7 @@ public class App {
         	    */
                String message = String.format("OK - Sent message to topic:%s partition:%s  offset:%s", 
             		   	recordMetadata.topic(), recordMetadata.partition(), recordMetadata.offset());
-               logger.debug(message);
+               logger.info(message);
            }
        }
    }
