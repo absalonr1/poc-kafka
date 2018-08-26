@@ -1,5 +1,6 @@
 package aopazo_kafka.test;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -35,7 +36,8 @@ public class App {
         * but you can control this using the "retry.backoff.ms" parameter. 
         */
        props.put("retries", 2);
-       props.put("retry.backoff.ms", 2000);
+       props.put("retry.backoff.ms", 500);
+       //props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, Integer.toString(Integer.MAX_VALUE));
        //props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,Integer.toString(Integer.MAX_VALUE)); // increase to infinity from default of 300 s
 
        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -44,7 +46,7 @@ public class App {
        Producer<String, String> producer = new KafkaProducer<String, String>(props);
        TestCallback callback = new TestCallback();
 
-       for (long i = 0; i < 2 ; i++) {
+       for (long i = 0; i < 100 ; i++) {
     	   long time = System.currentTimeMillis();
            ProducerRecord<String, String> data = new ProducerRecord<String, String>(
                    "test-topic", 

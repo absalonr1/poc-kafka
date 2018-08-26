@@ -5,6 +5,8 @@ services:
         restart: "no"
         hostname: zoo1
         container_name: zoo1
+        expose:
+            - 2181
         ports:
             - 2181:2181
         environment:
@@ -16,6 +18,8 @@ services:
         restart: "no"
         hostname: zoo2
         container_name: zoo2
+        expose:
+            - 2181
         ports:
             - 2182:2181
         environment:
@@ -27,6 +31,8 @@ services:
         restart: "no"
         hostname: zoo3
         container_name: zoo3
+        expose:
+            - 2181
         ports:
             - 2183:2181
         environment:
@@ -64,10 +70,13 @@ services:
             - zoo2
             - zoo3
         expose:
-            - "9092"
+            #listeners
+            - "9072"
+            - "9062"
         #HOST:CONTAINER
         ports:
-            - 9092:9092
+            - 9072:9072
+            - 9062:9062
         entrypoint:
             - /usr/local/kafka/bin/kafka-server-start.sh
             - /usr/local/kafka/config/server.properties
@@ -82,9 +91,11 @@ services:
         depends_on:
             - kafka1
         expose:
-            - "9092"
+            - "9073"
+            - "9063"
         ports:
-            - 9093:9092
+            - 9073:9073
+            - 9063:9063
         entrypoint:
             - /usr/local/kafka/bin/kafka-server-start.sh
             - /usr/local/kafka/config/server.properties
@@ -99,9 +110,11 @@ services:
         depends_on:
             - kafka2
         expose:
-            - "9092"
+            - "9074"
+            - "9064"
         ports:
-            - 9094:9092
+            - 9074:9074
+            - 9064:9064
         entrypoint:
             - /usr/local/kafka/bin/kafka-server-start.sh
             - /usr/local/kafka/config/server.properties
