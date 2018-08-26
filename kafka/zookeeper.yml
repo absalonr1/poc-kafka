@@ -108,6 +108,18 @@ services:
         volumes:
             #HOST:CONTAINMER
             - ./config_kafka3:/usr/local/kafka/config
+    kafka-ui:
+        image: sourcelaborg/kafka-webview:latest
+        restart: "no"
+        hostname: kafka-ui
+        container_name: kafka-ui
+        expose:
+            - "8080"
+        ports:
+            - 8084:8080
+        volumes:
+            #HOST:CONTAINMER
+            - ./kafkawebview_data:/app/data
 
 networks:
   kafka-network:
