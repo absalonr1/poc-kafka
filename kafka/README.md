@@ -11,7 +11,7 @@ bin/kafka-topics.sh --create --zookeeper zoo1:2181/kafka --replication-factor 3 
 
 
 LIST
-/usr/local/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka1:9062,kafka2:9063,kafka3:9064 --topic test-topic --from-beginning 
+/usr/local/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka1:9062,kafka2:9063,kafka3:9064 --topic test-topic --from-beginning
 
 CREATE 
 /usr/local/kafka/bin/kafka-topics.sh --create --zookeeper zoo1:2181,zoo2:2181,zoo3:2181/kafka --replication-factor 3 --partitions 2 --topic test-topic 
