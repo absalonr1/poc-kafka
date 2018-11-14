@@ -21,6 +21,13 @@ public class App {
        Properties props = new Properties();
        props.put("client.id", InetAddress.getLocalHost().getHostName()); 
        props.put("bootstrap.servers", args[0]);
+
+	props.put("security.protocol", "SSL");
+	props.put("ssl.truststore.location","/home/absalon/client.truststore.jks");
+	props.put("ssl.truststore.password", "absalon");
+	props.put("ssl.keystore.location", "/home/absalon/client.keystore.jks");
+	props.put("ssl.keystore.password", "absalon");
+	props.put("ssl.key.password", "absalon");
        
        /**
         * If acks=all, the producer will receive a success response from the broker once all in-sync
